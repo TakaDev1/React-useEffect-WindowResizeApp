@@ -1,32 +1,100 @@
-# React + TypeScript + Vite
+# React-useEffect-WindowResizeApp
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+Reactの `useEffect` を使って、ブラウザのウィンドウサイズ変更を検知する練習用アプリです。
 
-Currently, two official plugins are available:
+## 📌 概要
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+ブラウザのウィンドウをリサイズすると、現在のウィンドウ幅を取得して画面に表示します。
 
-## React Compiler
+`useEffect` を利用して `resize` イベントのリスナーを登録し、コンポーネントのアンマウント時にクリーンアップしています。
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠 使用技術
 
-## Expanding the Oxlint configuration
+* React
+* TypeScript
+* Vite
+* Tailwind CSS
+* useState
+* useEffect
+* Window Resize Event
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 📂 コンポーネント構成
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```text
+src/
+├── components/
+│   ├── HandleResize.tsx
+│   └── DisplayWindowSize.tsx
+├── App.tsx
+└── main.tsx
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+### HandleResize.tsx
+
+ウィンドウ幅の状態管理と `resize` イベントの処理を担当します。
+
+* `useState` でウィンドウ幅を管理
+* `resize` イベントを監視
+* ウィンドウサイズ変更時に `windowWidth` を更新
+* クリーンアップでイベントリスナーを解除
+
+### DisplayWindowSize.tsx
+
+`HandleResize` から受け取ったウィンドウ幅を画面に表示します。
+
+## 🔄 処理の流れ
+
+```text
+ブラウザをリサイズ
+      ↓
+resizeイベント発生
+      ↓
+handleResize実行
+      ↓
+window.innerWidthを取得
+      ↓
+setWindowWidthで状態更新
+      ↓
+再レンダリング
+      ↓
+現在のウィンドウ幅を表示
+```
+
+## 🧹 useEffectのクリーンアップ
+
+イベントリスナーを登録した場合、コンポーネントがアンマウントされるときに解除します。
+
+```tsx
+useEffect(() => {
+  const handleResize = () => {
+    setWindowWidth(window.innerWidth);
+  };
+
+  window.addEventListener("resize", handleResize);
+
+  return () => {
+    window.removeEventListener("resize", handleResize);
+  };
+}, []);
+```
+
+これにより、不要になったイベントリスナーが残り続けることを防ぎます。
+
+## 🎯 学習ポイント
+
+* `useState` による状態管理
+* `useEffect` の基本的な使い方
+* ブラウザAPIの `window.innerWidth`
+* `resize` イベントの監視
+* イベントリスナーの登録と解除
+* `useEffect` のクリーンアップ
+* コンポーネント間のProps受け渡し
+
+## 🚀 起動方法
+
+```bash
+npm install
+npm run dev
+```
+
+表示されたURLをブラウザで開き、ウィンドウサイズを変更すると幅が更新されます。
